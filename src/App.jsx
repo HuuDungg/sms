@@ -1,11 +1,15 @@
 import { useState, useRef } from 'react';
 import axios from 'axios';
+import { Input, Button, message, Space, Typography, Form, Row, Col } from 'antd';
 import './App.css';
+
+const { Title } = Typography;
 
 function App() {
   const [sdt, setSdt] = useState('');
   const [count, setCount] = useState(0);
   const intervalRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(false)
 
   const sendOtpRequest = async (sdt) => {
     const requests = [
@@ -62,11 +66,10 @@ function App() {
     });
   };
 
-  const handleRunOnce = () => {
-    sendOtpRequest(sdt);
-  };
-
   const handleRunInfinite = () => {
+    message.success('Running');
+    setIsLoading(true)
+    setCount(0);
     intervalRef.current = setInterval(() => {
       sendOtpRequest(sdt);
       setCount(prevCount => prevCount + 1);
@@ -74,21 +77,40 @@ function App() {
   };
 
   const handleStopInfinite = () => {
+    message.success('Stopped successfully');
+    setIsLoading(false)
     clearInterval(intervalRef.current);
   };
 
   return (
-    <div>
-      <input
-        type="text"
-        value={sdt}
-        onChange={(e) => setSdt(e.target.value)}
-        placeholder="Nhập số điện thoại"
-      />
-      <button onClick={handleRunOnce}>Chạy 1 lần</button>
-      <button onClick={handleRunInfinite}>Chạy vô hạn</button>
-      <button onClick={handleStopInfinite}>Dừng chạy vô hạn</button>
-      <p>Số lần đã chạy: {count}</p>
+    <div style={{ padding: 20 }}>
+      <Title level={3}>OTP Request Tool</Title>
+      <Form direction="vertical">
+        <Row gutter={[16, 16]}>
+          <Col span={24}>
+            <Form.Item>
+              <Input
+                type="text"
+                value={sdt}
+                onChange={(e) => setSdt(e.target.value)}
+                placeholder="Nhập số điện thoại"
+                style={{ width: 300 }}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={24}>
+            <Form.Item>
+              <Button loading={isLoading} style={{ margin: '10px' }} type="default" onClick={handleRunInfinite}>Run infinitely</Button>
+              <Button style={{ margin: '10px' }} danger={true} onClick={handleStopInfinite}>Stop</Button>
+            </Form.Item>
+          </Col>
+          <Col span={24}>
+            <Form.Item>
+              <Typography.Text>Count: {count}</Typography.Text>
+            </Form.Item>
+          </Col>
+        </Row>
+      </Form>
     </div>
   );
 }
