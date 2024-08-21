@@ -92,7 +92,16 @@ function App() {
           <Col span={24}>
             <Form.Item
               name="phoneNumber"
-              rules={[{ required: true, message: 'Please enter a phone number' }]}
+              rules={[
+                {
+                  required: true,
+                  message: 'Please enter a phone number'
+                },
+                {
+                  type: 'number',
+                  message: 'Data type invalid'
+                }
+              ]}
             >
               <Input
                 type="text"
