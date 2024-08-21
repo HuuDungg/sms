@@ -93,7 +93,7 @@ function App() {
                 type="text"
                 value={sdt}
                 onChange={(e) => setSdt(e.target.value)}
-                placeholder="Nhập số điện thoại"
+                placeholder="Enter phone number"
                 style={{ width: 300 }}
               />
             </Form.Item>
