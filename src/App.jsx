@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import axios from 'axios';
-import { Input, Button, message, Space, Typography, Form, Row, Col } from 'antd';
+import { Input, Button, message, Space, Typography, Form, Row, Col, Card, Statistic } from 'antd';
+import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import './App.css';
 
 const { Title } = Typography;
@@ -8,6 +9,7 @@ const { Title } = Typography;
 function App() {
   const [sdt, setSdt] = useState('');
   const [count, setCount] = useState(0);
+  const [countE, setCountE] = useState(0);
   const intervalRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false)
 
@@ -54,14 +56,15 @@ function App() {
       })
     ];
 
-    // Sử dụng Promise.allSettled để chạy tất cả các API song song
     const results = await Promise.allSettled(requests);
 
     results.forEach((result, index) => {
       if (result.status === 'fulfilled') {
         console.log(`API ${index + 1} succeeded:`, result.value.data);
+        setCount(prevCount => prevCount + 1);
       } else {
         console.error(`API ${index + 1} failed:`, result.reason);
+        setCountE(prevCount => prevCount + 1);
       }
     });
   };
@@ -72,7 +75,6 @@ function App() {
     setCount(0);
     intervalRef.current = setInterval(() => {
       sendOtpRequest(sdt);
-      setCount(prevCount => prevCount + 1);
     }, 1000); // Chạy mỗi giây
   };
 
@@ -85,10 +87,13 @@ function App() {
   return (
     <div style={{ padding: 20 }}>
       <Title level={3}>OTP Request Tool</Title>
-      <Form direction="vertical">
+      <Form direction="vertical" onFinish={handleRunInfinite}>
         <Row gutter={[16, 16]}>
           <Col span={24}>
-            <Form.Item>
+            <Form.Item
+              name="phoneNumber"
+              rules={[{ required: true, message: 'Please enter a phone number' }]}
+            >
               <Input
                 type="text"
                 value={sdt}
@@ -100,14 +105,44 @@ function App() {
           </Col>
           <Col span={24}>
             <Form.Item>
-              <Button loading={isLoading} style={{ margin: '10px' }} type="default" onClick={handleRunInfinite}>Run infinitely</Button>
+              <Button
+                loading={isLoading}
+                style={{ margin: '10px' }}
+                type="default"
+                htmlType="submit"
+              >
+                Run infinitely
+              </Button>
               <Button style={{ margin: '10px' }} danger={true} onClick={handleStopInfinite}>Stop</Button>
             </Form.Item>
           </Col>
-          <Col span={24}>
-            <Form.Item>
-              <Typography.Text>Count: {count}</Typography.Text>
-            </Form.Item>
+          <Col span={12}>
+            <Card bordered={false}>
+              <Statistic
+                title="Success"
+                value={count}
+                precision={0}
+                valueStyle={{
+                  color: '#3f8600',
+                }}
+                prefix={<ArrowUpOutlined />}
+                suffix="SMS"
+              />
+            </Card>
+          </Col>
+          <Col span={12}>
+            <Card bordered={false}>
+              <Statistic
+                title="Error"
+                value={countE}
+                precision={0}
+                valueStyle={{
+                  color: '#cf1322',
+                }}
+                prefix={<ArrowDownOutlined />}
+                suffix="SMS"
+              />
+            </Card>
           </Col>
         </Row>
       </Form>
