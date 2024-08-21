@@ -98,8 +98,8 @@ function App() {
                   message: 'Please enter a phone number'
                 },
                 {
-                  type: 'number',
-                  message: 'Data type invalid'
+                  pattern: /^[0-9]+$/,
+                  message: 'Phone number must only contain digits'
                 }
               ]}
             >
