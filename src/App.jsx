@@ -73,6 +73,7 @@ function App() {
     message.success('Running');
     setIsLoading(true)
     setCount(0);
+    setCountE(0);
     intervalRef.current = setInterval(() => {
       sendOtpRequest(sdt);
     }, 1000); // Chạy mỗi giây
